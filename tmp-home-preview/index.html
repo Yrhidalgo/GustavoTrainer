@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GustavoTrainer — Propuestas Visuales Home</title>
+  <link rel="stylesheet" href="variables.css">
+  <link rel="stylesheet" href="styles-a.css">
+  <link rel="stylesheet" href="styles-b.css">
+  <style>
+    /* --- ESTILOS DE SEGURIDAD PARA VISUALIZACIÓN --- */
+    /* Asegurar legibilidad base -- */
+    body { 
+      background: var(--surface) !important; 
+      color: var(--label) !important; 
+    }
+    h1, h2, h3, h4, h5, h6 { 
+      color: var(--label) !important; 
+    }
+    .narrow, .header, .weight-card, .streak-card, .card {
+      background: var(--surface) !important;
+      color: var(--label) !important;
+    }
+    /* Asegurar que los iconos y colores semánticos sean visibles */
+    .icon[style*="color: var(--orange)"], .flame-icon { 
+      color: var(--orange) !important; 
+    }
+    .color-accent { color: var(--acc) !important; }
+    .progress-stripe { background: var(--yellow) !important; }
+    /* Asegurar contraste en textos sobre backgrounds */
+    .delta span, .week-streak, .workouts-total { 
+      color: var(--label) !important; 
+    }
+    /* Asegurar legibilidad de textos en cards */
+    .card * { color: var(--label) !important; }
+    
+    /* --- Fin ESTILOS DE SEGURIDAD --- */
+</style>
+</head>
+<body>
+
+  <!-- CONTROL -->
+  <div style="position: fixed; top: 20px; left: 20px; z-index: 1000;">
+    <div style="background: var(--surface); padding: var(--pad); border-radius: var(--r-card); box-shadow: 0 2px 8px rgba(0,0,0,.3);">
+      <h3 style="margin: 0 0 var(--pad) 0; font-size: .8rem; color: var(--label-2);">Versión:</h3>
+      <div style="display: flex; gap: var(--pad);">
+        <button id="btn-current" style="flex: 1; padding: calc(var(--pad)/2) 0; background: var(--surface); border: 1px solid var(--sep); border-radius: var(--r-sm); color: var(--label); font-size: .7rem;">Actual</button>
+        <button id="btn-a" style="flex: 1; padding: calc(var(--pad)/2) 0; background: var(--surface); border: 1px solid var(--sep); border-radius: var(--r-sm); color: var(--label); font-size: .7rem;">Propuesta A</button>
+        <button id="btn-b" style="flex: 1; padding: calc(var(--pad)/2) 0; background: var(--surface); border: 1px solid var(--sep); border-radius: var(--r-sm); color: var(--label); font-size: .7rem;">Propuesta B</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARACIÓN LATERAL -->
+  <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+    <div style="display: none; gap: var(--pad); background: var(--surface); padding: var(--pad); border-radius: var(--r-card); box-shadow: 0 2px 8px rgba(0,0,0,.3); margin-bottom: calc(var(--pad));">
+      <div>
+        <strong style="color: var(--label);">Actual:</strong> <span id="l-current" style="color: var(--acc)"></span>
+      </div>
+      <div>
+        <strong style="color: var(--label);">Propuesta A:</strong> <span id="l-a" style="color: var(--acc)"></span>
+      </div>
+      <div>
+        <strong style="color: var(--label);">Propuesta B:</strong> <span id="l-b" style="color: var(--acc)"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION ACTUAL -->
+  <div id="view-current" class="view current active" style="margin-top: 80px;">
+    <h2 style="text-align: center; margin-bottom: var(--pad); color: var(--label);">Home — Versión Actual</h2>
+    <div class="narrow home-current">
+      <header>
+        <h1>Entrenador Ejemplo</h1>
+        <div class="app-name">GustavoTrainer</div>
+      </header>
+
+      <div class="weight-card">
+        <div class="weight-value">75.5</div>
+        <div class="delta">
+          <span><span class="icon" style="color: var(--green)">▲</span><span class="value">+1.2</span></span>
+          <span class="trend">vs semana anterior</span>
+        </div>
+      </div>
+
+      <div class="streak-card">
+        <div class="streak-info">
+          <div class="flame-icon">🔥</div>
+          <div class="week-streak">3 semanas</div>
+          <div class="workouts-total">12 workouts totales</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPUESTA A -->
+  <div id="view-a" class="view" style="display: none;">
+    <h2 style="text-align: center; margin-bottom: var(--pad); color: var(--label);">Propuesta A — Evolución Conservadora</h2>
+    <div class="narrow home-a">
+      <header>
+        <h1>Entrenador Ejemplo</h1>
+        <div class="app-name">GustavoTrainer</div>
+      </header>
+
+      <div class="weight-card">
+        <div class="weight-value">75.5</div>
+        <div class="delta">
+          <span><span class="icon" style="color: var(--acc)">▲</span><span class="value">+1.2</span></span>
+          <span class="trend">vs semana anterior</span>
+        </div>
+      </div>
+
+      <div class="streak-card">
+        <div class="streak-info">
+          <div class="flame-icon">🔥</div>
+          <div class="week-streak">3 semanas</div>
+          <div class="workouts-total">12 workouts totales</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPUESTA B -->
+  <div id="view-b" class="view" style="display: none;">
+    <h2 style="text-align: center; margin-bottom: var(--pad); color: var(--label);">Propuesta B — Alternativa Premium</h2>
+    <div class="narrow home-b">
+      <header class="header">
+        <div class="title">Entrenador Ejemplo</div>
+        <div class="app-name">GustavoTrainer</div>
+      </header>
+
+      <div class="weight-card">
+        <div class="weight-value">75.5</div>
+        <div class="delta">
+          <span><span class="icon" style="color: var(--acc)">▲</span><span class="value">+1.2</span></span>
+          <span class="trend">vs semana anterior</span>
+        </div>
+      </div>
+
+      <div class="streak-card">
+        <div class="streak-info">
+          <div class="flame-icon">🔥</div>
+          <div class="week-streak">3 semanas</div>
+          <div class="workouts-total">12 workouts totales</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

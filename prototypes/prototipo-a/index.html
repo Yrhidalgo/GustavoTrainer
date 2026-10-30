@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GustavoTrainer — Prototipo A: Fitness Premium</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Barra de navegación fija -->
+  <header class="app-bar">
+    <div class="app-bar-logo">GustavoTrainer</div>
+    <nav class="app-bar-nav">
+      <a href="#" class="app-bar-link">Inicio</a>
+      <a href="#" class="app-bar-link">Planos</a>
+      <a href="#" class="app-bar-link">Estadísticas</a>
+    </nav>
+  </header>
+
+  <!-- Hero principal -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Tu entrenamiento hoy</h1>
+      <p>Continúa donde lo dejaste. Tu progreso está a un clic de distancia.</p>
+      <a href="#workout" class="btn-primary">Empezar sesión</a>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-badge">Nuevo programa</div>
+      <svg class="hero-svg" viewBox="0 0 200 200" aria-hidden="true">
+        <path d="M100 10 L150 50 L180 120 L120 150 L100 180 L50 150 L20 120 L50 50 Z" fill="#1e3a5f"/>
+        <circle cx="100" cy="100" r="60" fill="none" stroke="#0066aa" stroke-width="8"/>
+        <circle cx="100" cy="100" r="30" fill="rgba(0,102,170,0.15)"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Sección de entrenamiento principal -->
+  <main id="workout" class="section">
+    <div class="section-header">
+      <h2>Entrenamiento actual</h2>
+      <span class="section-badge">3 de 5 series completadas</span>
+    </div>
+    
+    <div class="workout-card">
+      <div class="workout-info">
+        <h3>Full Body Strength</h3>
+        <p>4 series • 8-12 repeticiones</p>
+      </div>
+      <div class="workout-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 60%"></div>
+        </div>
+        <span>60% completado</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Métricas rápidas -->
+  <section class="section metrics-section">
+    <div class="section-header">
+      <h2>Estadísticas rápidas</h2>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" id="metric-strength">145</div>
+        <div class="metric-label">Fuerza máxima (kg)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metric-endurance">89</div>
+        <div class="metric-label">Resistencia (min)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metric-consistency">12</div>
+        <div class="metric-label">Semanas consecutivas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>GustavoTrainer · Versión 1.0 · Todos los derechos reservados</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

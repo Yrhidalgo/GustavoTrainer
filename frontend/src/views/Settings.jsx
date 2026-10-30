@@ -58,6 +58,7 @@ import WatchSettingsPage from './WatchSettings.jsx'
 import { reportSheet } from '../components/ReportSheet.jsx'
 import { csvExportSheet } from '../components/CsvExportSheet.jsx'
 import GymReminderPage, { GymEditPage } from './GymReminder.jsx'
+import Subscriptions from './Subscriptions.jsx'
 import { readGymConfig } from '../lib/gym-reminder.js'
 import { THEMES, inSeason, seasonChoice, activeSeason } from '../lib/seasonal.js'
 
@@ -508,6 +509,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     watch: () => <WatchSettingsPage />,
     gym: () => <GymReminderPage />,
     'gym-edit': () => <GymEditPage />,
+    subscriptions: () => <Subscriptions />,
     workout: () => <>
       <Section title={t('Rest')} footer={t('Each exercise can have its own rest too. Set it in the exercise settings of a routine.')}>
         {restRow}
@@ -680,7 +682,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* The buzz at the end of a rest or a hold and on a set tick, on its own switch like the
             sound (Discord, asierlama). iOS has no navigator.vibrate: the row stays, greyed out,
             and says so, instead of an iPhone user looking for a setting that is not there. */}
-        <Section footer={!canVibrate && iPhone ? t('iPhone doesn’t let openGym vibrate. A sound or a flash does the job.') : null}>
+        <Section footer={!canVibrate && iPhone ? t('iPhone doesn’t let Gustavo Trainer vibrate. A sound or a flash does the job.') : null}>
           <Row icon="vibrate" iconTint="var(--indigo)" title={t('Vibrate')} className={canVibrate ? '' : 'dis'}
             subtitle={canVibrate ? null : iPhone ? t('Not on iPhone') : t('Not supported in this browser.')}>
             <Switch checked={canVibrate && S.vibrate !== false} disabled={!canVibrate} onChange={v => update(s => { s.vibrate = v })} />
@@ -931,7 +933,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       <Section title={t('Bring data in')}>
         <Row icon="download" iconTint="var(--teal)" title={t('Import backup')} accessory="chevron" onClick={() => fileRef.current.click()} />
         <Row icon="download" iconTint="var(--teal)" title={t('Import from another app')}
-          subtitle={t('FitNotes, Strong, Hevy, GymMane, openGym CSV, or body weight from Apple Health')}
+          subtitle={t('FitNotes, Strong, Hevy, GymMane, Gustavo Trainer CSV, or body weight from Apple Health')}
           accessory="chevron" onClick={() => importRef.current.click()} />
         <Row icon="key" iconTint="var(--teal)" title={t('Import from Hevy')}
           subtitle={t('Pull your history with a Hevy Pro API key')}
@@ -969,8 +971,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       </Section>
       {/* Support: the project's own donation pages, and on the iPhone a straight line to writing a
           review. Plain links, no pop-up asking for anything (App Store 5.6.1). */}
-      <Section title={t('Support openGym')} footer={t('openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.')}>
-        {MOBILE && ios && <Row icon="star" iconTint="var(--orange)" title={t('Rate openGym on the App Store')} accessory="chevron"
+      <Section title={t('Support Gustavo Trainer')} footer={t('openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.')}>
+        {MOBILE && ios && <Row icon="star" iconTint="var(--orange)" title={t('Rate Gustavo Trainer on the App Store')} accessory="chevron"
           onClick={() => window.open('https://apps.apple.com/app/id6822275400?action=write-review', '_blank', 'noopener')} />}
         <Row icon="heart" iconTint="var(--pink)" title={t('Buy me a coffee')} subtitle="Buy Me a Coffee" accessory="chevron"
           onClick={() => window.open('https://buymeacoffee.com/duartesantos', '_blank', 'noopener')} />
@@ -985,13 +987,13 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       {!MOBILE && !standalone() && <Section title={t('Tip')}>
         <Row icon="share" iconTint="var(--blue)"
           title={IS_ANDROID ? t('In Chrome: ⋮ menu → Add to Home screen') : APPLE_UA ? t('In Safari: Share → Add to Home Screen') : t('In Chrome or Edge: the install icon in the address bar')}
-          subtitle={t('to install openGym as a full-screen app.') + ' ' + (user ? t('Your data syncs with your profile. Sign in anywhere and it’s there.') : t('Guest data stays on this device, so export a backup now and then!'))} />
+          subtitle={t('to install Gustavo Trainer as a full-screen app.') + ' ' + (user ? t('Your data syncs with your profile. Sign in anywhere and it’s there.') : t('Guest data stays on this device, so export a backup now and then!'))} />
       </Section>}
       {/* The version, where the support template tells people to look for it. On the phone
           build there is no address bar and no about box, so without this there is no way to tell
           which build you are running, or whether an update actually installed. */}
       <div className="dim small sp-version">
-        openGym v{__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
+        Gustavo Trainer v{__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
         <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">{t('Source code')}</a><br />
         {/* Attribution the media licence asks for word for word (agreement §8c), so it is not translated */}
         Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>, gymvisual.com.
@@ -1143,7 +1145,7 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
             value={t('Admin')} accessory="chevron" onClick={() => nav('/admin', { state: { section: 'coach' } })} className="sp-root-row" />}
         </Section>
       ))}
-      <div className="dim small sp-version">openGym v{__APP_VERSION__}</div>
+      <div className="dim small sp-version">Gustavo Trainer v{__APP_VERSION__}</div>
     </>}
   </div>
 }
@@ -1352,7 +1354,7 @@ function PushCard({ S, update, toast }) {
           nudgeNote(S)
         : null}
     >
-      <Row icon="bell" iconTint="var(--red)" title={t('Push notifications')} subtitle={t('Rest-timer alerts, even if openGym is closed.')}>
+      <Row icon="bell" iconTint="var(--red)" title={t('Push notifications')} subtitle={t('Rest-timer alerts, even if Gustavo Trainer is closed.')}>
         <Switch checked={on} disabled={busy} onChange={toggle} />
       </Row>
       {on && (

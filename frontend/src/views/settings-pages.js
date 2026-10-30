@@ -21,6 +21,7 @@ export const PAGES = {
   data: { title: 'Data & backup', icon: 'folder', tint: 'var(--blue)' },
   about: { title: 'About & updates', icon: 'info', tint: 'var(--grey)' },
   account: { title: 'Account', icon: 'personCircle', tint: 'var(--grey)' },
+  subscriptions: { title: 'Subscriptions', icon: 'creditCard', tint: 'var(--orange)' },
   advanced: { title: 'Fine-tuning', icon: 'wrench', tint: 'var(--grey)', parent: 'workout' },
   // Phone app only (#614): the gyms that get you a nudge when you arrive, and one of them.
   gym: { title: 'Gym reminder', icon: 'mapPin', tint: 'var(--green)', parent: 'reminders' },
@@ -169,6 +170,7 @@ export const SEARCH = [
   { page: 'account', title: 'Sign in with password', icon: 'key', tint: 'var(--orange)', kw: 'login sign in log in password', when: c => !c.mobile && !c.demo && !c.user && c.pwOn },
   { page: 'account', title: 'Create passkey profile', icon: 'plusCircle', tint: 'var(--acc)', kw: 'register account sign up create profile', when: c => !c.mobile && !c.demo && !c.user && c.webauthn },
   { page: 'account', title: 'Reset demo data', icon: 'reset', tint: 'var(--blue)', kw: 'demo reset example', when: c => c.demo },
+  { page: 'subscriptions', title: 'Subscriptions', icon: 'creditCard', tint: 'var(--orange)', kw: 'client subscription plan payment renewal', when: c => !!c.user && !c.demo },
 ]
 
 // Lower case, accents and other marks dropped, so "théme", "Thème" and "theme" meet.

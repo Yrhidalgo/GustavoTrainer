@@ -107,7 +107,7 @@ export default function Home() {
   return <div className="narrow">
     <div className="hdr">
       <SeasonDeco spot="header-bats" />
-      <div><h1>{user ? t('Hi {0}', user.name) : 'openGym'}</h1><div className="sub">{today.toLocaleDateString(dateLocale(), { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
+      <div><h1 className="premium-h1">{user ? t('Hi {0}', user.name) : 'openGym'}</h1><div className="sub">{today.toLocaleDateString(dateLocale(), { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
       <button className="iconbtn" onClick={() => nav('/settings')} aria-label={trouble ? t('Settings') + ', ' + t('Connection problem') : t('Settings')}><Icon name="gear" />{trouble && <span className="tab-dot" aria-hidden="true" />}</button>
     </div>
 
@@ -131,7 +131,7 @@ export default function Home() {
           routine name behind a green Start tag and read as still outstanding (issue #4).
           An in-progress session still wins — that one is happening right now. Tapping the
           row keeps working, so a second session in one day is a tap away, just not urged. */}
-      <div className="today-row" {...tappable(onToday)}>
+      <div className="today-row premium-today-row" {...tappable(onToday)}>
         <div className="row" style={{ gap: 9, minWidth: 0 }}>
           <span className="lrow-i" style={{ background: S.active ? 'var(--orange)' : doneToday ? 'var(--surface-3)' : routine ? 'var(--acc)' : 'var(--surface-3)' }}>
             <Icon name={S.active ? (editingSaved ? 'pencil' : 'play') : doneToday ? 'checkCircle' : routine ? glyphOf(routine.emoji) : 'moon'}
@@ -193,7 +193,7 @@ export default function Home() {
       </div>
     )}
 
-    {S.showWeightCard !== false && <div className="card">
+    {S.showWeightCard !== false && <div className="card premium-weight-card">
       <div className="row between bw-head" style={{ marginBottom: 6 }}>
         <h2 style={{ margin: 0 }}>{t('Body weight')}</h2>
         <div className="row" style={{ gap: 8 }}>
@@ -231,13 +231,13 @@ export default function Home() {
         : t("No weigh-ins yet. Log your weight to start the curve (we also ask before every workout).")}</div>}
     </div>}
 
-    <div className="card tappable" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
+    <div className="card tappable premium-calendar-card" style={{ cursor: 'pointer' }} {...tappable(() => calendarSheet())}>
       <SeasonDeco spot="home-streak" />
       <div className="row between">
         <div>
-          <div className="row" style={{ gap: 7, fontSize: 22, fontWeight: 600, letterSpacing: '-.021em' }}>
+          <div className="row premium-week-strip" style={{ gap: 7, fontSize: 22, fontWeight: 600, letterSpacing: '-.021em' }}>
             <Icon name="flame" style={{ color: 'var(--orange)' }} />
-            {t('{0} week streak', streakWeeks(S))}
+            <span className="premium-streak">{t('{0} week streak', streakWeeks(S))}</span>
           </div>
           <div className="muted small" style={{ marginTop: 2 }}>{doneThisWeek}{plannedPerWeek ? ' / ' + plannedPerWeek : ''} {t('this week')} · {tn('{0} workout total', '{0} workouts total', S.workouts.length)}</div>
         </div>

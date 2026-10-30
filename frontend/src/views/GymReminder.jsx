@@ -38,8 +38,8 @@ const ios = () => platformNow() === 'ios'
 const explainAlways = () => new Promise(resolve => confirmSheet({
   title: ios() ? t('Allow location “Always”?') : t('Allow location “All the time”?'),
   message: <>
-    <p>{t('To notice that you walked into your gym while openGym is closed, the phone needs to let it see your location in the background.')}</p>
-    <p style={{ marginTop: 8 }}>{t('The phone itself watches the gyms you added and only wakes openGym when you arrive. No tracking in between, and your locations never leave this phone.')}</p>
+    <p>{t('To notice that you walked into your gym while Gustavo Trainer is closed, the phone needs to let it see your location in the background.')}</p>
+    <p style={{ marginTop: 8 }}>{t('The phone itself watches the gyms you added and only wakes Gustavo Trainer when you arrive. No tracking in between, and your locations never leave this phone.')}</p>
     {!ios() && <p style={{ marginTop: 8 }}>{t('On the next screen, pick “Allow all the time”.')}</p>}
   </>,
   confirmText: t('Continue'),
@@ -89,7 +89,7 @@ export default function GymReminderPage() {
         if (p?.location !== 'granted') { setPerm(p); toast(t('Location isn’t allowed for openGym. You can change that in the phone’s settings.')); return }
         p = await askBackgroundLocation()
         setPerm(p)
-        if (p?.background !== 'granted') { toast(t('Without background location the phone can’t spot your gym while openGym is closed.')); return }
+        if (p?.background !== 'granted') { toast(t('Without background location the phone can’t spot your gym while Gustavo Trainer is closed.')); return }
       }
       try {
         const { LocalNotifications } = await import('@capacitor/local-notifications')
@@ -124,7 +124,7 @@ export default function GymReminderPage() {
   const setWin = patch => save({ ...config, window: { ...(win || DEFAULT_WINDOW), ...patch } })
 
   return <>
-    <Section footer={t('Walk into one of your gyms and openGym nudges you to hit Start. Once a day at most, and never when you already trained. Your gyms stay on this phone.')}>
+    <Section footer={t('Walk into one of your gyms and Gustavo Trainer nudges you to hit Start. Once a day at most, and never when you already trained. Your gyms stay on this phone.')}>
       <Row icon="mapPin" iconTint="var(--green)" title={t('Gym reminder')}>
         <Switch checked={config.on} disabled={busy} onChange={toggle} aria-label={t('Gym reminder')} />
       </Row>

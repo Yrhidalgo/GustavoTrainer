@@ -1,0 +1,225 @@
+/* Prototipo B: Minimalista y Funcional
+   Diseño limpio, ligero y legible
+   Acceso rápido a rutinas, ejercicios y estadísticas
+   Pocos elementos decorativos
+   Prioridad a claridad y facilidad de uso
+*/
+
+/* Variables de diseño minimal */
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f9f9f9;
+  --primary: #1a1a1a;
+  --primary-light: #2d2d2d;
+  --text: #333333;
+  --text-secondary: #666666;
+  --accent: #0066aa;
+  --border: #e0e0e0;
+  --radius: 4px;
+  --font-base: 'System', -apple-system, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+}
+
+/* Reset base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-base);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Contenedor principal */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Header simplificado */
+.app-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.logo svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+.app-header h1 {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--primary);
+}
+
+/• Main content */
+.main-content {
+  margin-bottom: 3rem;
+}
+
+.workout-section {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.workout-section h2 {
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.workout-info p {
+  color: var(--primary-light);
+  font-size: var(--font-size-md);
+  margin: 0;
+}
+
+.workout-info a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: var(--font-size-md);
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.workout-info a:hover {
+  text-decoration: underline;
+}
+
+/* Stats grid */
+.stats-section {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.stat-item text-align: center;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Quick access links */
+.quick-access {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.quick-access h2 {
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.quick-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg-alt);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  transition: background 0.2s;
+}
+
+.quick-link:hover {
+  background: var(--primary-light);
+}
+
+.quick-link span:first-child {
+  font-weight: 500;
+}
+
+.quick-link span:last-child {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-left: auto;
+}
+
+/* Footer */
+.app-footer {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .app-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .logo {
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .quick-links {
+    grid-template-columns: 1fr;
+  }
+}

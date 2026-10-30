@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GustavoTrainer — Prototipo C: Gamificación y Constancia</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Contenedor principal -->
+  <div class="app-container">
+    
+    <!-- Header con estado de progreso -->
+    <header class="app-header">
+      <div class="logo">GT</div>
+      <h1>GustavoTrainer</h1>
+      <div class="header-status">
+        <span class="status-streak">Racha actual: <strong id="streak-value">3</strong> semanas</span>
+        <span class="status-level">Nivel: <strong id="level-value">II</strong></span>
+      </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+      
+      <!-- Panel de progreso visual -->
+      <section class="progress-panel">
+        <h2>Progreso esta semana</h2>
+        
+        <div class="stripe-progress">
+          <div class="stripe-fill" id="stripe-fill" style="width: 60%"></div>
+        </div>
+        <p class="stripe-label">60% de la meta semanal</p>
+      </section>
+
+      <!-- Tarjetas de logros -->
+      <section class="achievements-section">
+        <h2>Logros recientes</h2>
+        <div class="achievements-grid" id="achievements-grid">
+          <!-- Tarjetas se insertan via JS -->
+        </div>
+      </section>
+
+      <!-- Botón principal de acción -->
+      <section class="action-section" style="margin: 3rem 0;">
+        <div class="action-center">
+          <button class="btn-action" id="start-workout-btn">
+            <span>Empezar entrenamiento</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Estadísticas de constancia -->
+      <section class="stats-constancy">
+        <div class="stats-grid stats-constancy-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value" id="fire-streak">3</div>
+            <div class="stat-label">Semanas seguidas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💪</div>
+            <div class="stat-value" id="total-workouts">12</div>
+            <div class="stat-label">Total workouts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value" id="achievements-unlocked">5</div>
+            <div class="stat-label">Logros desbloqueados</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Sigue adelante. Cada sesión cuenta.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

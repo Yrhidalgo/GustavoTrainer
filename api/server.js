@@ -38,6 +38,9 @@ import { stampPut } from './sync-stamps.js';
 import { atomicWrite as durableWrite } from './durable.js';
 import { excusedOn, nudgeFor, nudgeWindowOpen, toneOf } from './nudge.js';
 
+// A utility function to safely convert a value to a string
+// Already defined at line 912 as: const text = v => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '');
+
 const PORT = +(process.env.PORT || 3000);
 const DATA = process.env.DATA_DIR || '/data';
 const RP_ID = process.env.RP_ID || 'localhost';
@@ -149,6 +152,9 @@ db.creds = db.creds || [];
 db.subs = db.subs || [];
 db.invites = db.invites || [];
 db.deviceLinks = db.deviceLinks || [];   // unused one-time device links, hashed (device-link.js)
+db.clients = db.clients || [];           // trainer's clients (subscription management)
+db.subscriptions = db.subscriptions || []; // client subscriptions (separate from db.subs = push subs)
+db.payments = db.payments || [];          // payment records linked to subscriptions
 const isAdmin = user => !!user && (user.admin === true || ADMIN_UIDS.includes(user.id));
 // One owner per instance, any number of admins. Admins run the place day to day (users, invites,
 // the Coach); the owner is the one admin the others cannot act on: only the owner appoints or
@@ -2909,6 +2915,294 @@ const routes = {
     json(res, 200, { ok: true });
   },
 
+  /* ---------- Subscriptions (trainer's own clients) ---------- */
+  // Every route below is scoped to the signed-in trainer: readSession resolves the owner,
+  // and every read/write filters by trainerId. A trainer never sees another trainer's rows.
+
+  // ---- clients ----
+  'GET /api/clients': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const q = (new URL(req.url, 'http://x').searchParams.get('q') || '').toLowerCase().trim();
+    let list = db.clients.filter(c => c.trainerId === user.id);
+    if (q) list = list.filter(c =>
+      String(c.name || '').toLowerCase().includes(q) ||
+      String(c.email || '').toLowerCase().includes(q) ||
+      String(c.phone || '').toLowerCase().includes(q));
+    list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    json(res, 200, { clients: list });
+  },
+
+  'POST /api/clients': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const name = text(body.name).slice(0, 120);
+    if (!name) return json(res, 400, { error: 'name is required', code: 'name-required' });
+    const email = text(body.email || '').slice(0, 200);
+    const phone = text(body.phone || '').slice(0, 40);
+    const client = {
+      id: crypto.randomUUID(),
+      trainerId: user.id,
+      name,
+      email: email || null,
+      phone: phone || null,
+      createdAt: new Date().toISOString(),
+      active: body.active !== false
+    };
+    db.clients.push(client);
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.client.create', { user, clientId: client.id });
+    json(res, 200, { client });
+  },
+
+  'GET /api/clients/{id}': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const client = db.clients.find(c => c.id === req.clientId && c.trainerId === user.id);
+    if (!client) return json(res, 404, { error: 'no such client' });
+    json(res, 200, { client });
+  },
+
+  'PUT /api/clients/{id}': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const client = db.clients.find(c => c.id === req.clientId && c.trainerId === user.id);
+    if (!client) return json(res, 404, { error: 'no such client' });
+    if (body.name !== undefined) {
+      const name = text(body.name).slice(0, 120);
+      if (!name) return json(res, 400, { error: 'name is required', code: 'name-required' });
+      client.name = name;
+    }
+    if (body.email !== undefined) client.email = text(body.email || '').slice(0, 200) || null;
+    if (body.phone !== undefined) client.phone = text(body.phone || '').slice(0, 40) || null;
+    if (body.active !== undefined) client.active = !!body.active;
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.client.update', { user, clientId: client.id });
+    json(res, 200, { client });
+  },
+
+  'DELETE /api/clients/{id}': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const client = db.clients.find(c => c.id === req.clientId && c.trainerId === user.id);
+    if (!client) return json(res, 404, { error: 'no such client' });
+    const hasSubs = db.subscriptions.some(s => s.clientId === client.id);
+    if (hasSubs) return json(res, 400, { error: 'client has subscriptions: remove them first', code: 'has-subscriptions' });
+    db.clients = db.clients.filter(c => c.id !== client.id);
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.client.delete', { user, clientId: client.id });
+    json(res, 200, { ok: true });
+  },
+  // ---- subscriptions ----
+  'GET /api/subscriptions': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const q = new URL(req.url, 'http://x').searchParams;
+    const status = q.get('status') || '';
+    const clientId = q.get('clientId') || '';
+    let list = db.subscriptions.filter(s => s.trainerId === user.id);
+    if (status) list = list.filter(s => s.status === status);
+    if (clientId) list = list.filter(s => s.clientId === clientId);
+    list.sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
+    const byId = Object.fromEntries(db.clients.filter(c => c.trainerId === user.id).map(c => [c.id, c]));
+    json(res, 200, { subscriptions: list.map(s => ({ ...s, client: byId[s.clientId] || null })) });
+  },
+
+  'POST /api/subscriptions': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const clientId = text(body.clientId);
+    const client = db.clients.find(c => c.id === clientId && c.trainerId === user.id);
+    if (!client) return json(res, 404, { error: 'no such client', code: 'client-not-found' });
+    const planName = text(body.planName).slice(0, 120);
+    if (!planName) return json(res, 400, { error: 'plan name is required', code: 'plan-required' });
+    const price = +body.price;
+    if (!Number.isFinite(price) || price < 0 || price > 999999.99) return json(res, 400, { error: 'invalid price', code: 'price-invalid' });
+    const currency = String(body.currency || 'USD').toUpperCase().slice(0, 3);
+    if (!/^[A-Z]{3}$/.test(currency)) return json(res, 400, { error: 'invalid currency', code: 'currency-invalid' });
+    const durationMonths = +body.durationMonths;
+    if (!Number.isInteger(durationMonths) || durationMonths < 1 || durationMonths > 600) return json(res, 400, { error: 'invalid duration', code: 'duration-invalid' });
+    const startDate = text(body.startDate);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) return json(res, 400, { error: 'invalid start date', code: 'start-date-invalid' });
+    const start = new Date(startDate + 'T00:00:00');
+    if (isNaN(start.getTime())) return json(res, 400, { error: 'invalid start date', code: 'start-date-invalid' });
+    const endDate = new Date(start);
+    endDate.setMonth(endDate.getMonth() + durationMonths);
+    const subscription = {
+      id: crypto.randomUUID(),
+      trainerId: user.id,
+      clientId,
+      planName,
+      price: Math.round(price * 100) / 100,
+      currency,
+      durationMonths,
+      startDate: start.toISOString(),
+      endDate: endDate.toISOString(),
+      status: 'active',
+      renewals: []
+    };
+    db.subscriptions.push(subscription);
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.create', { user, subscriptionId: subscription.id });
+    json(res, 200, { subscription });
+  },
+  'GET /api/subscriptions/{id}': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const subscription = db.subscriptions.find(s => s.id === req.subId && s.trainerId === user.id);
+    if (!subscription) return json(res, 404, { error: 'no such subscription' });
+    const client = db.clients.find(c => c.id === subscription.clientId && c.trainerId === user.id);
+    json(res, 200, { subscription: { ...subscription, client: client || null } });
+  },
+
+  'PUT /api/subscriptions/{id}': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const subscription = db.subscriptions.find(s => s.id === req.subId && s.trainerId === user.id);
+    if (!subscription) return json(res, 404, { error: 'no such subscription' });
+    if (body.planName !== undefined) {
+      const planName = text(body.planName).slice(0, 120);
+      if (!planName) return json(res, 400, { error: 'plan name is required', code: 'plan-required' });
+      subscription.planName = planName;
+    }
+    if (body.price !== undefined) {
+      const price = +body.price;
+      if (!Number.isFinite(price) || price < 0 || price > 999999.99) return json(res, 400, { error: 'invalid price', code: 'price-invalid' });
+      subscription.price = Math.round(price * 100) / 100;
+    }
+    if (body.currency !== undefined) {
+      const currency = String(body.currency || '').toUpperCase().slice(0, 3);
+      if (!/^[A-Z]{3}$/.test(currency)) return json(res, 400, { error: 'invalid currency', code: 'currency-invalid' });
+      subscription.currency = currency;
+    }
+    if (body.status !== undefined) {
+      if (!['active', 'expired', 'cancelled'].includes(body.status)) return json(res, 400, { error: 'invalid status', code: 'status-invalid' });
+      subscription.status = body.status;
+    }
+    if (body.startDate !== undefined) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(body.startDate)) return json(res, 400, { error: 'invalid start date', code: 'start-date-invalid' });
+      subscription.startDate = new Date(body.startDate + 'T00:00:00').toISOString();
+    }
+    if (body.endDate !== undefined) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(body.endDate)) return json(res, 400, { error: 'invalid end date', code: 'end-date-invalid' });
+      const end = new Date(body.endDate + 'T00:00:00');
+      if (isNaN(end.getTime()) || end <= new Date(subscription.startDate)) return json(res, 400, { error: 'end date must be after start date', code: 'end-date-invalid' });
+      subscription.endDate = end.toISOString();
+    }
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.update', { user, subscriptionId: subscription.id });
+    json(res, 200, { subscription });
+  },
+
+  'DELETE /api/subscriptions/{id}': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const subscription = db.subscriptions.find(s => s.id === req.subId && s.trainerId === user.id);
+    if (!subscription) return json(res, 404, { error: 'no such subscription' });
+    db.subscriptions = db.subscriptions.filter(s => s.id !== subscription.id);
+    db.payments = db.payments.filter(p => p.subscriptionId !== subscription.id);
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.delete', { user, subscriptionId: subscription.id });
+    json(res, 200, { ok: true });
+  },
+
+  'POST /api/subscriptions/{id}/renew': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const subscription = db.subscriptions.find(s => s.id === req.subId && s.trainerId === user.id);
+    if (!subscription) return json(res, 404, { error: 'no such subscription' });
+    const planName = text(body.planName || subscription.planName).slice(0, 120);
+    if (!planName) return json(res, 400, { error: 'plan name is required', code: 'plan-required' });
+    const price = +body.price;
+    if (!Number.isFinite(price) || price < 0 || price > 999999.99) return json(res, 400, { error: 'invalid price', code: 'price-invalid' });
+    const currency = String(body.currency || subscription.currency).toUpperCase().slice(0, 3);
+    if (!/^[A-Z]{3}$/.test(currency)) return json(res, 400, { error: 'invalid currency', code: 'currency-invalid' });
+    const durationMonths = +body.durationMonths;
+    if (!Number.isInteger(durationMonths) || durationMonths < 1 || durationMonths > 600) return json(res, 400, { error: 'invalid duration', code: 'duration-invalid' });
+    const start = new Date(subscription.endDate);
+    const end = new Date(start);
+    end.setMonth(end.getMonth() + durationMonths);
+    const renewal = { at: new Date().toISOString(), planName, price: Math.round(price * 100) / 100, currency, durationMonths, previousEndDate: subscription.endDate };
+    subscription.renewals.push(renewal);
+    subscription.planName = planName;
+    subscription.price = Math.round(price * 100) / 100;
+    subscription.currency = currency;
+    subscription.durationMonths = durationMonths;
+    subscription.startDate = start.toISOString();
+    subscription.endDate = end.toISOString();
+    subscription.status = 'active';
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.renew', { user, subscriptionId: subscription.id });
+    json(res, 200, { subscription, renewal });
+  },
+  // ---- payments ----
+  'GET /api/subscriptions/{id}/payments': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const subscription = db.subscriptions.find(s => s.id === req.subId && s.trainerId === user.id);
+    if (!subscription) return json(res, 404, { error: 'no such subscription' });
+    const payments = db.payments.filter(p => p.subscriptionId === subscription.id && p.trainerId === user.id);
+    payments.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    json(res, 200, { payments });
+  },
+
+  'POST /api/subscriptions/{id}/payments': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const subscription = db.subscriptions.find(s => s.id === req.subId && s.trainerId === user.id);
+    if (!subscription) return json(res, 404, { error: 'no such subscription' });
+    const amount = +body.amount;
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 999999.99) return json(res, 400, { error: 'invalid amount', code: 'amount-invalid' });
+    const currency = String(body.currency || subscription.currency).toUpperCase().slice(0, 3);
+    if (!/^[A-Z]{3}$/.test(currency)) return json(res, 400, { error: 'invalid currency', code: 'currency-invalid' });
+    const method = text(body.method).slice(0, 60) || 'manual';
+    const reference = text(body.reference || '').slice(0, 120) || null;
+    const status = body.status === 'verified' ? 'verified' : 'pending';
+    const payment = {
+      id: crypto.randomUUID(),
+      trainerId: user.id,
+      subscriptionId: subscription.id,
+      amount: Math.round(amount * 100) / 100,
+      currency,
+      method,
+      reference,
+      status,
+      verifiedAt: status === 'verified' ? new Date().toISOString() : null,
+      createdAt: new Date().toISOString()
+    };
+    db.payments.push(payment);
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.payment.create', { user, subscriptionId: subscription.id, paymentId: payment.id });
+    json(res, 200, { payment });
+  },
+  'PUT /api/subscriptions/{id}/payments/{paymentId}': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const subscription = db.subscriptions.find(s => s.id === req.subId && s.trainerId === user.id);
+    if (!subscription) return json(res, 404, { error: 'no such subscription' });
+    const payment = db.payments.find(p => p.id === req.paymentId && p.subscriptionId === subscription.id && p.trainerId === user.id);
+    if (!payment) return json(res, 404, { error: 'no such payment' });
+    if (body.status !== undefined) {
+      if (!['pending', 'verified'].includes(body.status)) return json(res, 400, { error: 'invalid status', code: 'status-invalid' });
+      payment.status = body.status;
+      payment.verifiedAt = body.status === 'verified' ? new Date().toISOString() : null;
+    }
+    if (body.amount !== undefined) {
+      const amount = +body.amount;
+      if (!Number.isFinite(amount) || amount <= 0 || amount > 999999.99) return json(res, 400, { error: 'invalid amount', code: 'amount-invalid' });
+      payment.amount = Math.round(amount * 100) / 100;
+    }
+    if (body.method !== undefined) payment.method = text(body.method).slice(0, 60) || 'manual';
+    if (body.reference !== undefined) payment.reference = text(body.reference || '').slice(0, 120) || null;
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.payment.update', { user, subscriptionId: subscription.id, paymentId: payment.id });
+    json(res, 200, { payment });
+  },
+
+  'DELETE /api/subscriptions/{id}/payments/{paymentId}': async (req, res) => {
+    const user = readSession(req); if (!user) return json(res, 401, { error: 'not signed in' });
+    const subscription = db.subscriptions.find(s => s.id === req.subId && s.trainerId === user.id);
+    if (!subscription) return json(res, 404, { error: 'no such subscription' });
+    const payment = db.payments.find(p => p.id === req.paymentId && p.subscriptionId === subscription.id && p.trainerId === user.id);
+    if (!payment) return json(res, 404, { error: 'no such payment' });
+    db.payments = db.payments.filter(p => p.id !== payment.id);
+    try { saveDb(); } catch (e) { return json(res, 500, { error: 'could not save' }); }
+    audit(req, 'subscription.payment.delete', { user, subscriptionId: subscription.id, paymentId: payment.id });
+    json(res, 200, { ok: true });
+  },
   /* ---------- AI Coach ---------- */
   // Routes live in coach/routes.js and are handed the helpers above rather than importing
   // them: they are closures over db and SECRET, and passing them in keeps that module free of
@@ -3004,6 +3298,11 @@ const server = http.createServer(async (req, res) => {
   // above stays a plain lookup, and so csrfOk and the catch-all see one name for every file.
   const mm = /^\/api\/media\/([0-9a-f]{64})$/.exec(url.pathname);
   if (mm) { key = req.method + ' /api/media/{hash}'; req.mediaHash = mm[1]; }
+  const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+  const sm = new RegExp('^\\/api\\/subscriptions\\/(' + UUID + ')$').exec(url.pathname);
+  if (sm) { key = req.method + ' /api/subscriptions/{id}'; req.subId = sm[1]; }
+  const pm = new RegExp('^\\/api\\/subscriptions\\/(' + UUID + ')\\/payments\\/(' + UUID + ')$').exec(url.pathname);
+  if (pm) { key = req.method + ' /api/subscriptions/{id}/payments/{paymentId}'; req.subId = pm[1]; req.paymentId = pm[2]; }
   const handler = routes[key];
   if (!handler) return json(res, 404, { error: 'not found' });
   if (!csrfOk(req, key)) {

@@ -1,0 +1,264 @@
+/* =============================================================================
+   GustavoTrainer Home — Versión Actual
+   ============================================================================= */
+.home-current.narrow {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--pad);
+}
+
+.home-current header {
+  text-align: center;
+  margin-bottom: calc(var(--pad));
+}
+
+.home-current header h1 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin: 0;
+}
+
+.home-current header .app-name {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--label-2);
+  margin-top: calc(var(--pad) / 4);
+}
+
+.home-current .weight-card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  padding: var(--pad);
+  margin-bottom: calc(var(--pad));
+}
+
+.home-current .weight-value {
+  font-size: 3rem;
+  font-weight: 300;
+  margin: .5rem 0;
+}
+
+.home-current .delta {
+  display: flex;
+  gap: var(--pad);
+  margin-top: calc(var(--pad) / 2);
+}
+
+.home-current .delta span {
+  font-size: 1.2rem;
+}
+
+.home-current .streak-card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  padding: var(--pad);
+}
+
+.home-current .streak-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-current .flame-icon {
+  color: var(--orange);
+  margin-bottom: var(--pad);
+}
+
+.home-current .week-streak {
+  font-weight: 600;
+  margin: var(--pad) 0;
+}
+
+.home-current .workouts-total {
+  color: var(--label-2);
+  font-size: .8rem;
+}
+
+/* =============================================================================
+   Propuesta A: Home Mejora Conservadora
+   ============================================================================= */
+.home-a.narrow {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--pad);
+}
+
+.home-a header {
+  text-align: center;
+  margin-bottom: calc(var(--pad));
+}
+
+.home-a header h1 {
+  font-weight: 600;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin: 0 0 calc(var(--pad) / 2);
+}
+
+.home-a header .app-name {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--label-2);
+  margin-top: var(--pad);
+}
+
+.home-a .weight-card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  padding: var(--pad);
+  margin-bottom: calc(var(--pad));
+  border-top: var(--hair);
+}
+
+.home-a .weight-value {
+  font-size: 3rem;
+  font-weight: 300;
+  margin: .5rem 0;
+}
+
+.home-a .delta {
+  display: flex;
+  gap: var(--pad);
+  align-items: baseline;
+  margin-top: calc(var(--pad) / 2);
+}
+
+.home-a .delta .icon {
+  color: var(--acc);
+  font-size: 1.2rem;
+}
+
+.home-a .delta .value {
+  font-size: 1rem;
+}
+
+.home-a .delta .trend {
+  font-size: .8rem;
+  font-weight: 500;
+  letter-spacing: -.021em;
+}
+
+.home-a .streak-card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  padding: var(--pad);
+  margin-bottom: calc(var(--pad));
+  border-top: var(--hair);
+}
+
+.home-a .streak-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-a .flame-icon {
+  color: var(--orange);
+  margin-bottom: calc(var(--pad) / 2);
+}
+
+.home-a .week-streak {
+  font-weight: 600;
+  letter-spacing: -.021em;
+  margin: calc(var(--pad) / 2) 0;
+}
+
+.home-a .workouts-total {
+  color: var(--label-2);
+  font-size: .8rem;
+  margin-top: calc(var(--pad) / 4);
+}
+
+/* Layout 2-col desktop */
+@media (min-width: 768px) {
+  .home-a .dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--pad);
+  }
+}
+
+/* Mantiene --orange y --yellow para funcionalidad semántica */
+.home-a .delta-positive { color: var(--green); }
+.home-a .delta-negative { color: var(--red); }
+.home-a .goal-badge { background: var(--acc); color: var(--on-acc); }
+.home-a .progress-stripe { background: var(--yellow); }
+.home-a .streak-flame { color: var(--orange); }
+```
+
+
+
+
+
+
+
+=============================================================================
+   GustavoTrainer Home — Alternativa Premium (Propuesta B)
+============================================================================= */
+.home-b.narrow {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--pad);
+}
+
+/* Layout grid 2-col en desktop */
+.home-b .header { 
+  margin-bottom: calc(var(--pad));
+}
+.home-b .header .title { 
+  text-align: center;
+}
+.home-b .header .app-name { 
+  text-align: center;
+  margin-top: var(--pad);
+  color: var(--label-2);
+}
+
+/* Escala de tipografía clamp */
+.home-b .header .title { 
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 600; 
+  margin: 0 0 calc(var(--pad));
+}
+.home-b .header .app-name { 
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 400;
+  margin: var(--pad) 0;
+}
+
+/* Layout 2-col desktop */
+@media (min-width: 768px) {
+  .home-b .dual-grid { 
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--pad);
+  }
+}
+
+/* --acc usado consistentemente en toda la UI */
+.premium-badge { 
+  background: var(--acc); 
+  color: var(--on-acc); 
+  padding: calc(var(--pad) / 2) var(--pad);
+  border-radius: var(--r-sm);
+}
+.chart-line { 
+  stroke: var(--acc); 
+}
+.premium .card { 
+  box-shadow: 0 2px 8px rgba(0,0,0,.2); 
+  border-radius: var(--r-card);
+  padding: var(--pad);
+}
+
+/* Manteniene --orange y --yellow para funcionalidad semántica */
+.progress-stripe { background: var(--yellow); }
+.streak-flame { color: var(--orange); }
+.semantic-text { color: var(--label); }
+
+/* Mobile-first layout */
+.home-b .mobile-first { 
+  flex-direction: column;
+}
+@media (min-width: 768px) {
+  .home-b .mobile-first { 
+    flex-direction: row;
+  }
+}

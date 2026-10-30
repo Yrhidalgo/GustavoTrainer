@@ -78,6 +78,7 @@ const History = lazyView(() => import('./views/History.jsx'))
 const Library = lazyView(() => import('./views/Library.jsx'))
 const Muscles = lazyView(() => import('./views/Muscles.jsx'))
 const SettingsRoute = lazyView(() => import('./views/Settings.jsx').then(m => ({ default: m.SettingsRoute })))
+const SubscriptionsRoute = lazyView(() => import('./views/Subscriptions.jsx'))
 let viewsPrefetched = false
 const prefetchViews = () => {
   if (viewsPrefetched) return
@@ -306,6 +307,7 @@ function Shell() {
       <Route path="/measurements" element={<Measurements />} />
       <Route path="/settings" element={<SettingsRoute />} />
       <Route path="/settings/:page" element={<SettingsRoute />} />
+      <Route path="/subscriptions" element={<SubscriptionsRoute />} />
       {/* The Coach screens gate themselves on the instance config; the routes exist
           unconditionally so a deep link from a notification lands somewhere sane
           rather than on the catch-all. */}

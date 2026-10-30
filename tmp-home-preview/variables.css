@@ -1,0 +1,125 @@
+/* =============================================================================
+   GustavoTrainer Design System Tokens (idénticos a frontend/src/index.css)
+   ============================================================================= */
+:root {
+  /* surfaces — dark is the default */
+  --bg:        #000000;
+  --bg-el:     #0e0e10;
+  --surface:   #1c1c1e;
+  --surface-2: #2c2c2e;
+  --surface-3: #3a3a3c;
+  
+  /* text */
+  --label:     #ffffff;
+  --label-2:   rgba(235,235,245,.60);
+  --label-3:   rgba(235,235,245,.32);
+  --label-4:   rgba(235,235,245,.18);
+  
+  /* lines */
+  --sep:       rgba(84,84,88,.60);
+  --sep-op:    rgba(84,84,88,.34);
+  --hair:      .5px;
+  
+  /* system palette */
+  --blue:#0a84ff; --green:#30d158; --red:#ff453a; --orange:#ff9f0a;
+  --yellow:#ffd60a; --teal:#40c8e0; --indigo:#5e5ce6; --pink:#ff375f;
+  --purple:#bf5af2; --mint:#63e6e2; --brown:#ac8e68; --grey:#8e8e93;
+  
+  /* accent (per-account, synced) */
+  --acc:  var(--green);
+  --acc-2:#248a3d;
+  --on-acc:#000000;
+  --acc-soft: color-mix(in srgb, var(--acc) 16%, transparent);
+  --acc-line: color-mix(in srgb, var(--acc) 38%, transparent);
+  
+  /* geometry */
+  --r-sm:8px; --r:12px; --r-lg:16px; --r-xl:22px; --r-card:14px;
+  --pad:16px;
+  --icon-stroke:1.7;
+  
+  /* motion */
+  --ease:cubic-bezier(.32,.72,0,1);
+  --fast:140ms; --med:220ms;
+  
+  /* system bars */
+  --sab:max(env(safe-area-inset-bottom,0px),var(--native-sab,0px));
+  --sat:max(env(safe-area-inset-top,0px),var(--native-sat,0px));
+  --conn:0px;
+}
+
+/* Light theme */
+:root[data-theme="light"] {
+  --bg:        #f2f2f7;
+  --bg-el:     #f7f7fa;
+  --surface:   #ffffff;
+  --surface-2: #ececef;
+  --surface-3: #e3e3e8;
+  --label:     #000000;
+  --label-2:   rgba(60,60,67,.60);
+  --label-3:   rgba(60,60,67,.32);
+  --label-4:   rgba(60,60,67,.18);
+}
+
+/* =============================================================================
+   Propuesta A: Evolución Conservadora
+   ============================================================================= */
+/* Aplica las 4 reglas del design system con mejoras sutiles */
+.narrow .header h1 { 
+  font-weight: 600; /* Regla 1: weight lleva significado */
+  margin-bottom: calc(var(--pad) / 2); /* Espaciado consistente */
+}
+
+.narrow .main-section { 
+  gap: var(--pad); /* Regla de ritmo consistente */
+  margin-top: calc(var(--pad)); /* Espacio consistente desde header */
+}
+
+.narrow .card { 
+  border-top: var(--hair); /* Regla 3: hairlines not borders */
+  padding: var(--pad); /* Consistencia de relleno */
+}
+
+/* Mantiene colores semánticos */
+.narrow .delta-positive { color: var(--green); }
+.narrow .delta-negative { color: var(--red); }
+.narrow .goal-badge { background: var(--acc); color: var(--on-acc); }
+
+/* =============================================================================
+   Propuesta B: Alternativa Premium  
+   ============================================================================= */
+/* Escala de tipografía clamp */
+.premium .header h1 { 
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 600; 
+}
+.premium .header .app-name { 
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 400;
+}
+
+/* Layout grid 2-col en desktop */
+@media (min-width: 768px) {
+  .premium .dual-grid { 
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--pad);
+  }
+}
+
+/* --acc usado consistentemente */
+.premium .premium-badge { 
+  background: var(--acc); 
+  color: var(--on-acc); 
+}
+.premium .chart-line { 
+  stroke: var(--acc); 
+}
+.premium .card { 
+  box-shadow: 0 2px 8px rgba(0,0,0,.2); 
+  border-radius: var(--r-card);
+}
+
+/* Manteniene --orange y --yellow para funcionalidad semántica */
+.premium .progress-stripe { background: var(--yellow); }
+.premium .streak-flame { color: var(--orange); }
+```

@@ -24,6 +24,12 @@
   --surface:   #1c1c1e;   /* card / grouped-list fill */
   --surface-2: #2c2c2e;   /* pressed + nested fill */
   --surface-3: #3a3a3c;   /* controls (segmented track, switch off) */
+  
+  /* Glassmorphism variables */
+  --glass-bg: rgba(255,255,255,0.08);
+  --glass-border: rgba(255,255,255,0.12);
+  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --glass-blur: 12px;
 
   /* text */
   --label:     #ffffff;
@@ -75,6 +81,12 @@
   --surface:   #ffffff;
   --surface-2: #ececef;
   --surface-3: #e3e3e8;
+  
+  /* Glassmorphism variables for light theme */
+  --glass-bg: rgba(0,0,0,0.05);
+  --glass-border: rgba(0,0,0,0.1);
+  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --glass-blur: 12px;
 
   --label:     #000000;
   --label-2:   rgba(60,60,67,.60);
@@ -326,11 +338,42 @@ h4.sec{
 .rate-range{display:grid;gap:8px;margin:14px 0 8px}
 
 /* ----------------------------------------------------------------- card -- */
+/* Glassmorphism card with fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(0px)) {
+  .card{
+    background:var(--surface);border-radius:var(--r-card);
+    padding:16px;margin-bottom:12px;
+    backdrop-filter:none;
+  }
+}
 .card{
-  background:var(--surface);border-radius:var(--r-card);
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-card);
   padding:16px;margin-bottom:12px;
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-shadow);
+  transition:background var(--med), border-color var(--med);
+}
+.card:hover:not(:focus-visible):not(.focus-visible){
+  background:color-mix(in srgb, var(--glass-bg), var(--acc) 15%);
+  border-color:var(--glass-border);
+}
+.card:focus-visible{
+  outline:2px solid var(--acc);
+  outline-offset:2px;
 }
 .card .big{font-size:30px;font-weight:600;letter-spacing:-.026em;line-height:1.1}
+
+/* Reduced motion fallback */
+@media (prefers-reduced-motion: reduce){
+  .card{
+    transition:none;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+  }
+}
 
 /* ------------------------------------------------------ inset group list -- */
 .sect{margin-bottom:22px}
@@ -2341,3 +2384,74 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .gym-radius-row>:first-child{flex:1}
 .gym-radius-val{min-width:64px;text-align:end;font-variant-numeric:tabular-nums;color:var(--label-2)}
 .gym-actions{display:flex;flex-direction:column;gap:10px;margin:4px 0 30px}
+
+/* --- Premium streak visual enhancement --- */
+.premium-streak{
+  color: var(--acc);
+  font-weight: 600;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+/* --- Premium header typography --- */
+.premium-h1{
+  font-weight: 600;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  color: var(--label);
+}
+
+/* --- Premium week strip (7-day calendar) --- */
+.premium-week-strip{
+  display: flex;
+  gap: var(--pad);
+  margin: var(--pad) 0;
+}
+.premium-week-strip .wday{
+  flex: 1 0 32px;
+  text-align: center;
+}
+.premium-week-strip .wday.today .dot.done{
+  background: var(--acc);
+}
+.premium-week-strip .wday .dot{
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--r-sm);
+  margin: 0 auto;
+  background: var(--surface-3);
+}
+
+/* --- Premium today-row visual hierarchy --- */
+.premium-today-row .lrow-i{
+  padding: 0 var(--pad);
+  border-radius: var(--r-sm);
+  transition: background 0.2s ease;
+}
+.premium-today-row .lrow-i:hover:not(.active):not(.done){
+  background: var(--surface-3);
+}
+
+/* --- Premium weight card --- */
+.premium-weight-card .bw-head{
+  border-bottom: var(--hair);
+  padding-bottom: var(--pad);
+  margin-bottom: var(--pad);
+}
+.premium-weight-card .chart{
+  margin-top: calc(var(--pad));
+}
+
+/* --- Premium calendar card --- */
+.premium-calendar-card{
+  border: var(--hair);
+}
+
+/* --- Consistency: all premium elements get subtle transitions --- */
+.premium-streak,
+.premium-h1,
+.premium-week-strip .wday .dot,
+.premium-weight-card .bw-head,
+.premium-calendar-card{
+  transition: background 0.2s ease, color 0.2s ease;
+}

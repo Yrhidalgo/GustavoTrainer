@@ -1,0 +1,262 @@
+/* Prototipo A: Fitness Premium
+   Dirección visual deportiva, contundente y profesional
+   Jerarquía tipográfica marcada
+   Paleta: azules oscuros, acentos cian, contrastes fuertes
+*/
+
+:root {
+  --bg-light: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-subtle: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-on-dark: #ffffff;
+  --accent-primary: #0066aa;
+  --accent-secondary: #00b3e6;
+  --accent-success: #28a745;
+  --accent-warning: #ffc107;
+  --border-color: #dee2e6;
+  --radius: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-light);
+  color: var(--text-primary);
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Barra de navegación */
+.app-bar {
+  background: var(--bg-card);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-bar-logo {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  letter-spacing: -0.02em;
+}
+
+.app-bar-nav a {
+  margin-left: 1.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.app-bar-nav a:hover {
+  color: var(--accent-primary);
+}
+
+/* Hero section */
+.hero {
+  min-height: 60vh;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+  padding: 120px 2rem 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.04em;
+}
+
+.hero-content p {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-primary {
+  display: inline-block;
+  background: var(--accent-primary);
+  color: white;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover {
+  background: var(--accent-secondary);
+  transform: translateY(-2px);
+}
+
+/* Visual hero */
+.hero-visual {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 400px;
+  height: 400px;
+}
+
+.hero-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--accent-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.hero-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Workout card */
+.section {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-badge {
+  float: right;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: -0.5rem;
+}
+
+.workout-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  margin-top: 1rem;
+}
+
+.workout-info h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.workout-info p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-subtle);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-primary);
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+/* Metrics grid */
+.metrics-section {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-top: 3rem;
+  box-shadow: var(--shadow);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.metric-card {
+  background: var(--bg-subtle);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin-bottom: 0.25rem;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+/* Footer */
+.app-footer {
+  background: var(--bg-card);
+  padding: 1.5rem 2rem;
+  margin-top: 4rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-content h1 { font-size: 2rem; }
+  .hero-visual { display: none; }
+  .app-bar-nav { display: none; }
+}

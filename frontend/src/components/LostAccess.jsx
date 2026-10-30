@@ -29,7 +29,7 @@ export function LostAccessSheet({ close }) {
       </div>)}
     </div>
     {MOBILE
-      ? <div className="small dim" style={{ marginBottom: 14, lineHeight: 1.45 }}>{t('In this app: enter the code on your openGym site in a browser, then pair the app again from Settings → Account there.')}</div>
+      ? <div className="small dim" style={{ marginBottom: 14, lineHeight: 1.45 }}>{t('In this app: enter the code on your Gustavo Trainer site in a browser, then pair the app again from Settings → Account there.')}</div>
       : <><Button variant="primary" icon="qr" onClick={() => { close(); openDeviceLinkRedeem() }}>{t('I have a code')}</Button><div style={{ height: 8 }} /></>}
     <Button variant="ghost" className="dim" onClick={close}>{t('Done')}</Button>
   </>

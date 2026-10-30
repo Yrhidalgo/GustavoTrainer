@@ -70,7 +70,7 @@ export function DeleteAccountSheet({ close, exportBackup, exportBackupZip, hasMe
       {t('Your profile, workouts, body weight, photos and videos are deleted from this server for good. There is no undo, and not even your admin can bring them back.')}
     </div>
     {step === 'name' ? <>
-      <div className="small" style={{ marginBottom: 8 }}>{t('Want a copy first? Export a backup. You can import it into openGym anytime.')}</div>
+      <div className="small" style={{ marginBottom: 8 }}>{t('Want a copy first? Export a backup. You can import it into Gustavo Trainer anytime.')}</div>
       {hasMedia && exportBackupZip
         ? <Button icon="share" onClick={exportBackupZip}>{t('Export with photos & videos (.zip)')}</Button>
         : <Button icon="share" onClick={exportBackup}>{t('Export backup (JSON)')}</Button>}

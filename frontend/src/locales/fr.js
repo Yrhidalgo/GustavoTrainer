@@ -975,7 +975,7 @@ export default {
   'Pairing code': "Code d'association",
   'Connecting…': 'Connexion…',
   'Connect': 'Connecter',
-  'How do you want to use openGym?': 'Comment veux-tu utiliser openGym ?',
+  'How do you want to use Gustavo Trainer?': 'Comment veux-tu utiliser openGym ?',
   'Use on this device': 'Utiliser sur cet appareil',
   'Local keeps everything on this phone. Connecting syncs to your own openGym server instead. You can switch later in Settings.': 'Local garde tout sur ce téléphone. Se connecter synchronise plutôt avec ton propre serveur openGym. Tu pourras changer cela plus tard dans Réglages.',
 
@@ -2475,7 +2475,7 @@ export default {
   'A day off before the next one': 'Un jour off avant le suivant',
   'Already in the loop: adds it again': 'Déjà dans la boucle : l’ajoute une fois de plus',
   'Rest day. The loop goes on {0}.': 'Jour de repos. La boucle reprend {0}.',
-  'Support openGym': 'Soutenir openGym',
+  'Support openGym': 'Soutenir Gustavo Trainer',
   'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym est gratuit : sans pub, sans abonnement, sans pistage. Un café l’aide à le rester.',
   'Rate openGym on the App Store': 'Noter openGym sur l’App Store',
   'Buy me a coffee': 'Offre-moi un café',

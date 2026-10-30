@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GustavoTrainer — Prototipo B: Minimalista y Funcional</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Contenedor principal -->
+  <div class="app-container">
+    
+    <!-- Header simplificado -->
+    <header class="app-header">
+      <div class="logo">GT</div>
+      <h1>GustavoTrainer</h1>
+    </header>
+
+    <!-- Sección principal -->
+    <main class="main-content">
+      
+      <!-- Tarjeta de entrenamiento destacado -->
+      <section class="workout-section">
+        <h2>Hoy</h2>
+        <div class="workout-info">
+          <p>No hay sesión programada</p>
+          <a href="#" class="btn-secondary">Ver planes</a>
+        </div>
+      </section>
+
+      <!-- Estadísticas esenciales -->
+      <section class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" id="stat-streak">0</div>
+            <div class="stat-label">Racha</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="stat-workouts">0</div>
+            <div class="stat-label">Workouts</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="stat-weight">—</div>
+            <div class="stat-label">Peso</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accesos rápidos -->
+      <section class="quick-access" style="margin-top: 3rem;">
+        <h2>Accesos rápidos</h2>
+        <div class="quick-links">
+          <a href="#" class="quick-link">
+            <span>Rutinas</span>
+            <span>📋</span>
+          </a>
+          <a href="#" class="quick-link">
+            <span>Ejercicios</span>
+            <span>💪</span>
+          </a>
+          <a href="#" class="quick-link">
+            <span>Estadísticas</span>
+            <span>📊</span>
+          </a>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer minimal -->
+    <footer class="app-footer">
+      <p>GustavoTrainer</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -3291,6 +3291,385 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
 
+  /api/clients:
+    get:
+      tags: [subscriptions]
+      operationId: getClients
+      summary: List the signed-in trainer's clients
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+          description: Search by name, e-mail or phone.
+      responses:
+        '200':
+          description: The trainer's clients.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clients:
+                    type: array
+                    items: { $ref: '#/components/schemas/Client' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [subscriptions]
+      operationId: postClient
+      summary: Create a client for the signed-in trainer
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, maxLength: 120 }
+                email: { type: string, maxLength: 200 }
+                phone: { type: string, maxLength: 40 }
+                active: { type: boolean }
+      responses:
+        '200':
+          description: The created client.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client: { $ref: '#/components/schemas/Client' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/clients/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [subscriptions]
+      operationId: getClient
+      summary: Get one client (owned by the trainer)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      responses:
+        '200':
+          description: The client.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client: { $ref: '#/components/schemas/Client' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [subscriptions]
+      operationId: putClient
+      summary: Update one client (owned by the trainer)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 120 }
+                email: { type: string, maxLength: 200 }
+                phone: { type: string, maxLength: 40 }
+                active: { type: boolean }
+      responses:
+        '200':
+          description: The updated client.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client: { $ref: '#/components/schemas/Client' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [subscriptions]
+      operationId: deleteClient
+      summary: Delete one client (owned by the trainer, no subscriptions)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      responses:
+        '200':
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Ok' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/subscriptions:
+    get:
+      tags: [subscriptions]
+      operationId: getSubscriptions
+      summary: List the signed-in trainer's subscriptions
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string, enum: [active, expired, cancelled] }
+        - in: query
+          name: clientId
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: The trainer's subscriptions (with client attached).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscriptions:
+                    type: array
+                    items: { $ref: '#/components/schemas/Subscription' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [subscriptions]
+      operationId: postSubscription
+      summary: Create a subscription for one of the trainer's clients
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [clientId, planName, price, durationMonths, startDate]
+              properties:
+                clientId: { type: string, format: uuid }
+                planName: { type: string, maxLength: 120 }
+                price: { type: number, minimum: 0, maximum: 999999.99 }
+                currency: { type: string, maxLength: 3 }
+                durationMonths: { type: integer, minimum: 1, maximum: 600 }
+                startDate: { type: string, format: date }
+      responses:
+        '200':
+          description: The created subscription.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscription: { $ref: '#/components/schemas/Subscription' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/subscriptions/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [subscriptions]
+      operationId: getSubscription
+      summary: Get one subscription (owned by the trainer)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      responses:
+        '200':
+          description: The subscription with its client.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscription: { $ref: '#/components/schemas/Subscription' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [subscriptions]
+      operationId: putSubscription
+      summary: Update one subscription (owned by the trainer)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planName: { type: string, maxLength: 120 }
+                price: { type: number, minimum: 0, maximum: 999999.99 }
+                currency: { type: string, maxLength: 3 }
+                status: { type: string, enum: [active, expired, cancelled] }
+                startDate: { type: string, format: date }
+                endDate: { type: string, format: date }
+      responses:
+        '200':
+          description: The updated subscription.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscription: { $ref: '#/components/schemas/Subscription' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [subscriptions]
+      operationId: deleteSubscription
+      summary: Delete one subscription (owned by the trainer)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      responses:
+        '200':
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Ok' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/subscriptions/{id}/renew:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string, format: uuid }
+    post:
+      tags: [subscriptions]
+      operationId: renewSubscription
+      summary: Renew a subscription (keeps the previous period in renewals history)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planName: { type: string, maxLength: 120 }
+                price: { type: number, minimum: 0, maximum: 999999.99 }
+                currency: { type: string, maxLength: 3 }
+                durationMonths: { type: integer, minimum: 1, maximum: 600 }
+      responses:
+        '200':
+          description: The renewed subscription and the renewal record.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscription: { $ref: '#/components/schemas/Subscription' }
+                  renewal: { $ref: '#/components/schemas/Renewal' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/subscriptions/{id}/payments:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [subscriptions]
+      operationId: getSubscriptionPayments
+      summary: List payments of a subscription (owned by the trainer)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      responses:
+        '200':
+          description: The subscription's payments.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payments:
+                    type: array
+                    items: { $ref: '#/components/schemas/Payment' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [subscriptions]
+      operationId: postSubscriptionPayment
+      summary: Record a payment for a subscription (pending by default)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount]
+              properties:
+                amount: { type: number, minimum: 0, maximum: 999999.99 }
+                currency: { type: string, maxLength: 3 }
+                method: { type: string, maxLength: 60 }
+                reference: { type: string, maxLength: 120 }
+                status: { type: string, enum: [pending, verified] }
+      responses:
+        '200':
+          description: The created payment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment: { $ref: '#/components/schemas/Payment' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/subscriptions/{id}/payments/{paymentId}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string, format: uuid }
+      - in: path
+        name: paymentId
+        required: true
+        schema: { type: string, format: uuid }
+    put:
+      tags: [subscriptions]
+      operationId: putSubscriptionPayment
+      summary: Update a payment (mark verified/pending)
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [pending, verified] }
+                amount: { type: number, minimum: 0, maximum: 999999.99 }
+                method: { type: string, maxLength: 60 }
+                reference: { type: string, maxLength: 120 }
+      responses:
+        '200':
+          description: The updated payment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment: { $ref: '#/components/schemas/Payment' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [subscriptions]
+      operationId: deleteSubscriptionPayment
+      summary: Delete a payment
+      security: [{ cookieAuth: [], bearerAuth: [] }]
+      responses:
+        '200':
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Ok' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
 components:
   securitySchemes:
     cookieAuth:
@@ -3459,6 +3838,64 @@ components:
       type: object
       properties:
         ok: { type: boolean, const: true }
+
+    Client:
+      type: object
+      required: [id, trainerId, name, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        trainerId: { type: string, format: uuid }
+        name: { type: string, maxLength: 120 }
+        email: { oneOf: [{ type: string, maxLength: 200 }, { type: 'null' }] }
+        phone: { oneOf: [{ type: string, maxLength: 40 }, { type: 'null' }] }
+        createdAt: { type: string, format: 'date-time' }
+        active: { type: boolean }
+
+    Subscription:
+      type: object
+      required: [id, trainerId, clientId, planName, price, currency, durationMonths, startDate, endDate, status]
+      properties:
+        id: { type: string, format: uuid }
+        trainerId: { type: string, format: uuid }
+        clientId: { type: string, format: uuid }
+        planName: { type: string, maxLength: 120 }
+        price: { type: number }
+        currency: { type: string, maxLength: 3 }
+        durationMonths: { type: integer, minimum: 1, maximum: 600 }
+        startDate: { type: string, format: 'date-time' }
+        endDate: { type: string, format: 'date-time' }
+        status: { type: string, enum: [active, expired, cancelled] }
+        renewals:
+          type: array
+          items: { $ref: '#/components/schemas/Renewal' }
+        client:
+          oneOf: [{ $ref: '#/components/schemas/Client' }, { type: 'null' }]
+
+    Renewal:
+      type: object
+      required: [at, planName, price, currency, durationMonths, previousEndDate]
+      properties:
+        at: { type: string, format: 'date-time' }
+        planName: { type: string, maxLength: 120 }
+        price: { type: number }
+        currency: { type: string, maxLength: 3 }
+        durationMonths: { type: integer, minimum: 1, maximum: 600 }
+        previousEndDate: { type: string, format: 'date-time' }
+
+    Payment:
+      type: object
+      required: [id, trainerId, subscriptionId, amount, currency, method, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        trainerId: { type: string, format: uuid }
+        subscriptionId: { type: string, format: uuid }
+        amount: { type: number }
+        currency: { type: string, maxLength: 3 }
+        method: { type: string, maxLength: 60 }
+        reference: { oneOf: [{ type: string, maxLength: 120 }, { type: 'null' }] }
+        status: { type: string, enum: [pending, verified] }
+        verifiedAt: { oneOf: [{ type: string, format: 'date-time' }, { type: 'null' }] }
+        createdAt: { type: string, format: 'date-time' }
 
     PasskeyList:
       type: object
