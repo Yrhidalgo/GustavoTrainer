@@ -328,7 +328,7 @@ function Shell() {
           is under way the page it goes back to sits underneath (Page `under`), and as the swipe
           lands it simply stays: same key, same parent, so React keeps it instead of mounting
           the route again. */}
-      <div id="app">
+      <div id="app" className="hybrid-page">
         <Page key={loc.pathname} loc={loc} render={view} motion={pageMotion(pathRef.current, loc.pathname, navType)} />
         {showPreview && <Page key={preview} loc={previewLoc(preview)} render={view} under scrollY={scrollPositions.get(preview) || 0} />}
       </div>
@@ -378,7 +378,12 @@ function Page({ loc, render, under = false, scrollY = 0, motion = 'fade' }) {
 
 export default function App() {
   const boot = useStore(s => s.boot)
-  useEffect(() => { boot() }, [boot])
+  useEffect(() => {
+    boot().catch(e => {
+      // Log the error but don't crash the app
+      console.error('Boot error:', e)
+    })
+  }, [boot])
   useEffect(() => { prefetchViews() }, [])
   // Android system back — sheet, then page, then press-again-to-exit (see lib/back.js)
   useEffect(() => {
